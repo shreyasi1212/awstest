@@ -4,13 +4,17 @@ Created on Sat May  4 15:03:50 2019
 
 @author: Winchester
 """
+import flask
+import json
+from flask import Flask, requests
 
+app = Flask(__name__)
 class Stats:
     """
     Calculate means and variances
     """
     
-    def __init__(self,x,y):
+    def __init__(self):
         """
         This is a constructor
         """
@@ -45,10 +49,25 @@ class Stats:
             sd += (elem-self.mn)**2
         sd = (sd/len(arr))**0.5
         return sd
-    
-stats_obj = Stats(3,4)
-print(stats_obj.calc_std([2,3,4]))
 
-            
+stats_obj = Stats()
+#print(stats_obj.calc_std([2,3,4]))
+
+@app.route('/mean',methods=['POST']    
+def cal_mean():
+	arr = request.data.decode('utf-8')
+	jsonStr = json.loads(arr)
+	arr = jsonStr['arr']
+        mn = stats_obj.calc_mean(arr)
+	return mn  
         
+@app.route('/std',methods=['POST']    
+def cal_std():
+	arr = request.data.decode('utf-8')
+	jsonStr = json.loads(arr)
+	arr = jsonStr['arr']
+        std = stats_obj.calc_std(arr)
+	return std  
         
+if __name__=='__main__':
+	app.run(host='localhost', port=8080)
